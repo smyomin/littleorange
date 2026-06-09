@@ -1,13 +1,21 @@
-import { supabase } from '@/lib/supabase'
+import Header from '@/components/Header'
+import Footer from '@/components/Footer'
 
-export default async function Home() {
-  const { data, error } = await supabase.from('settings').select('*')
-
+export default function Home() {
   return (
-    <main className="p-8">
-      <h1 className="text-2xl font-bold">Little Orange</h1>
-      {error && <p className="text-red-500">Connection failed: {error.message}</p>}
-      {data && <p className="text-green-500">✅ Supabase connected! Store: {data[0]?.store_name}</p>}
-    </main>
+    <div className="min-h-screen flex flex-col">
+      <Header />
+      <main className="flex-1 max-w-6xl mx-auto px-4 py-12 w-full">
+        <div className="text-center py-20">
+          <h1 className="text-4xl font-bold mb-4" style={{color: 'var(--orange)'}}>
+            Welcome to Little Orange 🍊
+          </h1>
+          <p className="text-gray-500 text-lg">
+            Specialty Asian pantry essentials — coming soon!
+          </p>
+        </div>
+      </main>
+      <Footer />
+    </div>
   )
 }
