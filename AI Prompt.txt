@@ -1,0 +1,34 @@
+I want to develop an app for listing my groceries to sell online. I need know when the order take place. User can make an order but payment should be collected visa cash/bank transfer upon delivery. admin page for see their order. and update once it is delivered. If you have any better idea or professional advice please let me know.
+
+
+Customer flow: Guest checkout and subscribe for update
+
+Currency & Region: NZD
+
+Product catalog: Mostly dried or paste that in bottle like Chinese Mala, tomyam pasted or other interesting ones. No fresh food or fruite or vegetable.
+
+Please add Delivery fee + minimum order amount setting; Order status tracking; WhatsApp "share order" link for customer confirmation; Product categories & search.
+
+
+I want to host this on Vercel and Supabase for free hosting, therefore I am open any programming language for front end and backend which will well get along and supported for those platforms. But I want a good design and responsive for mobile friendly. 
+
+I don't want all steps and code together. Just guide me each step and resolve the error then next step. Along the way I want to deploy and run the test for the each step too. 
+
+FYI, I already created vercel and supabase account and installed VS code, Node.JS, create Git repo.
+
+Please let me know what to do first step.
+
+
+Project URL
+https://iowujcfmlatazutscvgr.supabase.co
+
+Supabase DB Password 
+dbcHmvcSYgyi0J64
+
+
+anon public key:
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlvd3VqY2ZtbGF0YXp1dHNjdmdyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5OTc3OTEsImV4cCI6MjA5NjU3Mzc5MX0.tKTfz3NPwVyF9OynRqhyb9znTTKCMgsQy5GTq4StUPQ
+
+
+NEXT_PUBLIC_SUPABASE_URL=https://iowujcfmlatazutscvgr.supabase.co
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_leclq3Kk8LdtBp-Bj5SRVw_sOiOKfQv
