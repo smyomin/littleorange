@@ -8,6 +8,7 @@ interface Product {
   price: number
   image_url: string | null
   in_stock: boolean
+  category_id: string
   categories?: { name: string }
 }
 
