@@ -1,5 +1,5 @@
 'use client'
-import { ShoppingCart, Store, Menu, X } from 'lucide-react'
+import { ShoppingCart, Menu, X } from 'lucide-react'
 import { useState } from 'react'
 import Link from 'next/link'
 
@@ -12,51 +12,147 @@ export default function Header({ cartCount = 0, onCartClick }: HeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false)
 
   return (
-    <header className="sticky top-0 z-50 bg-white shadow-sm">
-      <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+    <header style={{
+      position: 'sticky', top: 0, zIndex: 50,
+      background: 'rgba(255,251,245,0.95)',
+      backdropFilter: 'blur(12px)',
+      borderBottom: '1px solid #F0E0CC',
+    }}>
+      <div style={{
+        maxWidth: '1100px',
+        margin: '0 auto',
+        padding: '0 24px',
+        height: '64px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+      }}>
+
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2">
-          <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{backgroundColor: 'var(--orange)'}}>
-            <Store size={20} color="white" />
+        <Link href="/" style={{display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none'}}>
+          <div style={{
+            width: '38px', height: '38px', borderRadius: '12px',
+            background: 'linear-gradient(135deg, #F97316, #EA580C)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '20px', flexShrink: 0,
+          }}>
+            🍊
           </div>
-          <span className="font-bold text-xl" style={{color: 'var(--orange)'}}>Little Orange</span>
+          <div>
+            <div style={{fontWeight: 900, fontSize: '17px', color: '#F97316', lineHeight: 1.1}}>Little Orange</div>
+            <div style={{fontSize: '11px', color: '#A8A29E', lineHeight: 1}}>Asian Pantry Essentials</div>
+          </div>
         </Link>
 
         {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-gray-600">
-          <Link href="/" className="hover:text-orange-500 transition-colors">Shop</Link>
-          <Link href="/track" className="hover:text-orange-500 transition-colors">Track Order</Link>
+        <nav style={{display: 'flex', alignItems: 'center', gap: '2px'}}>
+          {[
+            { href: '/', label: 'Shop' },
+            { href: '/about', label: 'About' },
+            { href: '/why-us', label: 'Why Us' },
+            { href: '/faq', label: 'FAQ' },
+            { href: '/contact', label: 'Contact' },
+            { href: '/track', label: 'Track Order' },
+          ].map(link => (
+            <Link key={link.href} href={link.href} style={{
+              padding: '8px 14px', borderRadius: '10px',
+              fontSize: '13px', fontWeight: 600, color: '#78716C',
+              textDecoration: 'none', transition: 'all 0.2s',
+              whiteSpace: 'nowrap',
+            }}
+              onMouseEnter={e => (e.currentTarget.style.background = '#FFF7ED')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+            >
+              {link.label}
+            </Link>
+          ))}
         </nav>
 
-        {/* Cart Button */}
-        <div className="flex items-center gap-3">
+        {/* Right — Cart + Mobile menu */}
+        <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
           <button
             onClick={onCartClick}
-            className="relative flex items-center gap-2 btn-primary text-sm"
+            style={{
+              position: 'relative',
+              display: 'flex', alignItems: 'center', gap: '8px',
+              background: '#F97316', color: 'white',
+              border: 'none', borderRadius: '12px',
+              padding: '10px 18px', fontWeight: 700,
+              fontSize: '14px', cursor: 'pointer',
+              transition: 'all 0.2s',
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.background = '#EA6C0A'
+              e.currentTarget.style.transform = 'translateY(-1px)'
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = '#F97316'
+              e.currentTarget.style.transform = 'translateY(0)'
+            }}
           >
-            <ShoppingCart size={18} />
-            <span className="hidden sm:inline">Cart</span>
+            <ShoppingCart size={17} />
+            <span>Cart</span>
             {cartCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+              <span style={{
+                position: 'absolute', top: '-8px', right: '-8px',
+                background: '#DC2626', color: 'white',
+                fontSize: '11px', fontWeight: 900,
+                borderRadius: '999px', width: '20px', height: '20px',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                border: '2px solid white',
+              }}>
                 {cartCount}
               </span>
             )}
           </button>
 
           {/* Mobile menu toggle */}
-          <button className="md:hidden" onClick={() => setMenuOpen(!menuOpen)}>
-            {menuOpen ? <X size={24} /> : <Menu size={24} />}
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            style={{
+              display: 'none',
+              padding: '8px', borderRadius: '10px',
+              background: 'transparent', border: 'none',
+              cursor: 'pointer', color: '#1C1917',
+            }}
+            className="mobile-menu-btn"
+          >
+            {menuOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
         </div>
       </div>
 
       {/* Mobile Nav */}
-      {menuOpen && (
-        <div className="md:hidden bg-white border-t px-4 py-3 flex flex-col gap-3 text-sm font-medium text-gray-600">
-          <Link href="/" onClick={() => setMenuOpen(false)} className="hover:text-orange-500">Shop</Link>
-          <Link href="/track" onClick={() => setMenuOpen(false)} className="hover:text-orange-500">Track Order</Link>
+     {menuOpen && (
+        <div style={{
+          borderTop: '1px solid #F0E0CC',
+          background: '#FFFBF5',
+          padding: '12px 24px',
+          display: 'flex', flexDirection: 'column', gap: '4px',
+        }}>
+          {[
+            { href: '/', label: '🛍️ Shop' },
+            { href: '/about', label: '🍊 About Us' },
+            { href: '/why-us', label: '💡 Why Us' },
+            { href: '/faq', label: '❓ FAQ' },
+            { href: '/contact', label: '📬 Contact' },
+            { href: '/track', label: '📦 Track Order' },
+          ].map(link => (
+            <Link key={link.href} href={link.href} onClick={() => setMenuOpen(false)} style={{
+              padding: '10px 12px', borderRadius: '10px',
+              fontSize: '14px', fontWeight: 600, color: '#1C1917',
+              textDecoration: 'none',
+            }}>{link.label}</Link>
+          ))}
         </div>
       )}
+
+      <style>{`
+        @media (max-width: 640px) {
+          .mobile-menu-btn { display: flex !important; }
+          nav { display: none !important; }
+        }
+      `}</style>
     </header>
   )
 }

@@ -1,62 +1,89 @@
 @import "tailwindcss";
 
 :root {
-  --orange: #f97316;
-  --orange-dark: #ea6c0a;
-  --orange-light: #fff7ed;
+  --orange: #F97316;
+  --orange-dark: #EA6C0A;
+  --orange-light: #FFF7ED;
+  --amber: #FED7AA;
+  --bg: #FFFBF5;
+  --card: #FFFFFF;
+  --text: #1C1917;
+  --muted: #78716C;
+  --border: #F0E0CC;
+  --red: #DC2626;
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
 body {
-  font-family: 'Inter', sans-serif;
-  background-color: #fafafa;
-  color: #1a1a1a;
+  font-family: 'Inter', system-ui, sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
 }
 
 .btn-primary {
   background-color: var(--orange);
   color: white;
-  padding: 0.625rem 1.25rem;
-  border-radius: 0.5rem;
-  font-weight: 600;
-  transition: background-color 0.2s;
+  padding: 0.6rem 1.2rem;
+  border-radius: 0.75rem;
+  font-weight: 700;
+  font-size: 0.875rem;
+  transition: all 0.2s;
   cursor: pointer;
   border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
 }
-
 .btn-primary:hover {
   background-color: var(--orange-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(249,115,22,0.35);
 }
+.btn-primary:active { transform: translateY(0); }
 
 .btn-outline {
   border: 2px solid var(--orange);
   color: var(--orange);
-  padding: 0.625rem 1.25rem;
-  border-radius: 0.5rem;
-  font-weight: 600;
+  padding: 0.6rem 1.2rem;
+  border-radius: 0.75rem;
+  font-weight: 700;
+  font-size: 0.875rem;
   transition: all 0.2s;
   cursor: pointer;
   background: transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
 }
-
 .btn-outline:hover {
   background-color: var(--orange);
   color: white;
+  transform: translateY(-1px);
 }
 
 .card {
-  background: white;
-  border-radius: 1rem;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  background: var(--card);
+  border-radius: 1.25rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
   overflow: hidden;
-  transition: box-shadow 0.2s;
+  transition: all 0.25s ease;
+  border: 1.5px solid var(--border);
+}
+.card:hover {
+  box-shadow: 0 8px 28px rgba(249,115,22,0.13), 0 2px 8px rgba(0,0,0,0.05);
+  transform: translateY(-3px);
+  border-color: var(--amber);
 }
 
-.card:hover {
-  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }

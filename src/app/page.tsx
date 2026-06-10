@@ -38,9 +38,7 @@ export default function Home() {
 
   const { cart, addToCart, updateQuantity, removeFromCart, cartCount } = useCart()
 
-  useEffect(() => {
-    fetchData()
-  }, [])
+  useEffect(() => { fetchData() }, [])
 
   async function fetchData() {
     const [{ data: productsData }, { data: categoriesData }, { data: settingsData }] = await Promise.all([
@@ -66,50 +64,187 @@ export default function Home() {
   })
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div style={{minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#FFFBF5'}}>
       <Header cartCount={cartCount} onCartClick={() => setCartOpen(true)} />
 
-      <main className="flex-1 max-w-6xl mx-auto px-4 py-8 w-full">
-        {/* Hero */}
-        <div className="rounded-2xl p-8 mb-8 text-white text-center" style={{background: 'linear-gradient(135deg, #f97316, #ea580c)'}}>
-          <h1 className="text-3xl md:text-4xl font-bold mb-2">🍊 Little Orange</h1>
-          <p className="text-orange-100 text-lg">Specialty Asian pantry essentials — delivered to your door</p>
-          <p className="text-orange-200 text-sm mt-1">Cash or Bank Transfer on delivery · NZD</p>
-        </div>
+      <main style={{flex: 1}}>
 
-        {/* Search */}
-        <div className="relative mb-6">
-          <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search products..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-orange-400 bg-white text-sm"
-          />
-        </div>
+        {/* ── Hero ── */}
+        <div style={{
+          position: 'relative',
+          overflow: 'hidden',
+          background: 'linear-gradient(135deg, #1C1917 0%, #292524 60%, #3C1F0A 100%)',
+        }}>
+          {/* Dot pattern */}
+          <div style={{
+            position: 'absolute', inset: 0,
+            backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px)',
+            backgroundSize: '28px 28px',
+          }} />
+          {/* Glow top-right */}
+          <div style={{
+            position: 'absolute', top: 0, right: 0,
+            width: '400px', height: '400px', opacity: 0.2,
+            background: 'radial-gradient(circle at top right, #F97316, transparent 65%)',
+          }} />
+          {/* Glow bottom-left */}
+          <div style={{
+            position: 'absolute', bottom: 0, left: 0,
+            width: '300px', height: '300px', opacity: 0.1,
+            background: 'radial-gradient(circle at bottom left, #FED7AA, transparent 65%)',
+          }} />
 
-        {/* Categories */}
-        <div className="mb-6">
-          <CategoryFilter
-            categories={categories}
-            selected={selectedCategory}
-            onSelect={setSelectedCategory}
-          />
-        </div>
+          <div style={{
+            position: 'relative',
+            maxWidth: '1100px',
+            margin: '0 auto',
+            padding: '40px 24px',
+            textAlign: 'center',
+          }}>
+            {/* Top tag */}
+            <div style={{
+              display: 'inline-flex', alignItems: 'center', gap: '6px',
+              padding: '6px 16px', borderRadius: '999px',
+              background: 'rgba(249,115,22,0.15)',
+              border: '1px solid rgba(249,115,22,0.25)',
+              color: '#FDBA74', fontSize: '12px', fontWeight: 700,
+              marginBottom: '20px',
+            }}>
+              🔥 Authentic Asian Flavours · Auckland NZ
+            </div>
 
-        {/* Products Grid */}
-        {loading ? (
-          <div className="text-center py-20 text-gray-400">Loading products...</div>
-        ) : filtered.length === 0 ? (
-          <div className="text-center py-20 text-gray-400">No products found.</div>
-        ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {filtered.map(product => (
-              <ProductCard key={product.id} product={product} onAddToCart={addToCart} />
-            ))}
+            {/* Headline */}
+            <h1 style={{
+              fontSize: 'clamp(2rem, 5vw, 3.5rem)',
+              fontWeight: 900, color: 'white',
+              lineHeight: 1.15, marginBottom: '16px',
+            }}>
+              Bold Flavours,{' '}
+              <span style={{color: '#F97316'}}>Delivered.</span>
+            </h1>
+
+            {/* Subtitle */}
+            <p style={{
+              fontSize: '1rem', color: '#A8A29E',
+              marginBottom: '32px', lineHeight: 1.6,
+              maxWidth: '480px', margin: '0 auto 32px',
+            }}>
+              Mala, tom yam, curry pastes &amp; more — pay on delivery.
+            </p>
+
+            {/* Feature badges */}
+            <div style={{
+              display: 'flex', flexWrap: 'wrap',
+              gap: '12px', justifyContent: 'center',
+              marginBottom: '20px',
+            }}>
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: '8px',
+                padding: '10px 20px', borderRadius: '999px',
+                background: 'rgba(255,255,255,0.07)',
+                border: '1px solid rgba(255,255,255,0.12)',
+                color: '#E7E5E4', fontSize: '13px', fontWeight: 600,
+              }}>
+                🚚 Delivery NZ${deliveryFee.toFixed(2)} · Min NZ${minimumOrder.toFixed(2)}
+              </div>
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: '8px',
+                padding: '10px 20px', borderRadius: '999px',
+                background: 'rgba(255,255,255,0.07)',
+                border: '1px solid rgba(255,255,255,0.12)',
+                color: '#E7E5E4', fontSize: '13px', fontWeight: 600,
+              }}>
+                💵 Cash or bank transfer on delivery
+              </div>
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: '8px',
+                padding: '10px 20px', borderRadius: '999px',
+                background: 'rgba(255,255,255,0.07)',
+                border: '1px solid rgba(255,255,255,0.12)',
+                color: '#E7E5E4', fontSize: '13px', fontWeight: 600,
+              }}>
+                ✅ Quality Guaranteed
+              </div>
+            </div>
           </div>
-        )}
+        </div>
+
+        {/* ── Shop Section ── */}
+        <div style={{maxWidth: '1100px', margin: '0 auto', padding: '40px 24px'}}>
+
+          {/* Search */}
+          <div style={{position: 'relative', marginBottom: '24px'}}>
+            <Search size={17} style={{
+              position: 'absolute', left: '16px',
+              top: '50%', transform: 'translateY(-50%)',
+              color: '#78716C', pointerEvents: 'none',
+            }} />
+            <input
+              type="text"
+              placeholder="Search for mala, tom yam, curry paste..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              style={{
+                width: '100%', paddingLeft: '44px',
+                paddingRight: '16px', paddingTop: '14px', paddingBottom: '14px',
+                borderRadius: '14px', border: '2px solid #F0E0CC',
+                background: 'white', fontSize: '14px', fontWeight: 500,
+                color: '#1C1917', outline: 'none',
+                boxSizing: 'border-box',
+              }}
+              onFocus={e => (e.target.style.borderColor = '#F97316')}
+              onBlur={e => (e.target.style.borderColor = '#F0E0CC')}
+            />
+          </div>
+
+          {/* Categories */}
+          <div style={{marginBottom: '28px', overflowX: 'auto'}}>
+            <CategoryFilter
+              categories={categories}
+              selected={selectedCategory}
+              onSelect={setSelectedCategory}
+            />
+          </div>
+
+          {/* Result count */}
+          {!loading && (
+            <p style={{fontSize: '13px', color: '#78716C', marginBottom: '20px', fontWeight: 500}}>
+              {filtered.length} {filtered.length === 1 ? 'product' : 'products'} found
+            </p>
+          )}
+
+          {/* Grid */}
+          {loading ? (
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
+              gap: '20px',
+            }}>
+              {[...Array(8)].map((_, i) => (
+                <div key={i} style={{
+                  height: '280px', borderRadius: '20px',
+                  background: '#F0E0CC', animation: 'pulse 1.5s infinite',
+                }} />
+              ))}
+            </div>
+          ) : filtered.length === 0 ? (
+            <div style={{textAlign: 'center', padding: '80px 0'}}>
+              <span style={{fontSize: '48px', display: 'block', marginBottom: '16px'}}>🔍</span>
+              <p style={{fontWeight: 700, fontSize: '18px', marginBottom: '4px'}}>No products found</p>
+              <p style={{fontSize: '14px', color: '#78716C'}}>Try a different search or category</p>
+            </div>
+          ) : (
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
+              gap: '20px',
+            }}>
+              {filtered.map(product => (
+                <ProductCard key={product.id} product={product} onAddToCart={addToCart} />
+              ))}
+            </div>
+          )}
+        </div>
       </main>
 
       <Footer />
