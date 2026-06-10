@@ -2,13 +2,7 @@
 import { X, Plus, Minus, ShoppingBag, Trash2 } from 'lucide-react'
 import Link from 'next/link'
 
-interface CartItem {
-  id: string
-  name: string
-  price: number
-  quantity: number
-  image_url: string | null
-}
+import { CartItem } from '@/context/CartContext'
 
 interface CartDrawerProps {
   isOpen: boolean

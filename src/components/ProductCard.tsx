@@ -1,20 +1,11 @@
 'use client'
 import { ShoppingCart, Package } from 'lucide-react'
 
-interface Product {
-  id: string
-  name: string
-  description: string
-  price: number
-  image_url: string | null
-  in_stock: boolean
-  category_id: string
-  categories?: { name: string }
-}
+import { CartItem } from '@/context/CartContext'
 
 interface ProductCardProps {
-  product: Product
-  onAddToCart: (product: Product) => void
+  product: Omit<CartItem, 'quantity'>
+  onAddToCart: (product: Omit<CartItem, 'quantity'>) => void
 }
 
 export default function ProductCard({ product, onAddToCart }: ProductCardProps) {
