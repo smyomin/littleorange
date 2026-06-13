@@ -69,27 +69,48 @@ export default function TrackPage() {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <main className="flex-1 max-w-2xl mx-auto px-4 py-8 w-full">
-        <h1 className="text-2xl font-bold mb-2 flex items-center gap-2">
-          <Package size={24} style={{color: 'var(--orange)'}} />
+      <main style={{flex: 1, maxWidth: '760px', margin: '0 auto', padding: '48px 24px', width: '100%'}}>
+        <h1 style={{fontSize: '1.75rem', fontWeight: 900, color: '#1C1917', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '10px'}}>
+          <Package size={24} style={{color: '#F97316'}} />
           Track Your Order
         </h1>
-        <p className="text-gray-500 text-sm mb-6">Enter your order number or email address</p>
+        <p style={{color: '#78716C', fontSize: '14px', marginBottom: '28px'}}>Enter your order number or email address</p>
 
         {/* Search */}
-        <div className="flex gap-2 mb-8">
-          <div className="relative flex-1">
-            <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+<div style={{display: 'flex', gap: '10px', marginBottom: '32px'}}>
+          <div style={{position: 'relative', flex: 1}}>
+            <Search size={17} style={{
+              position: 'absolute', left: '14px',
+              top: '50%', transform: 'translateY(-50%)',
+              color: '#78716C', pointerEvents: 'none',
+            }} />
             <input
               type="text"
               placeholder="e.g. LO-123456 or your@email.com"
               value={query}
               onChange={e => setQuery(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleSearch()}
-              className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-orange-400 text-sm"
+              style={{
+                width: '100%', paddingLeft: '42px',
+                paddingRight: '16px', paddingTop: '14px', paddingBottom: '14px',
+                borderRadius: '14px', border: '2px solid #F0E0CC',
+                fontSize: '14px', color: '#1C1917',
+                background: 'white', outline: 'none', boxSizing: 'border-box',
+              }}
+              onFocus={e => (e.target.style.borderColor = '#F97316')}
+              onBlur={e => (e.target.style.borderColor = '#F0E0CC')}
             />
           </div>
-          <button onClick={handleSearch} className="btn-primary px-5">
+          <button
+            onClick={handleSearch}
+            style={{
+              background: '#F97316', color: 'white',
+              border: 'none', borderRadius: '14px',
+              padding: '14px 24px', fontWeight: 700,
+              fontSize: '14px', cursor: 'pointer',
+              whiteSpace: 'nowrap',
+            }}
+          >
             {loading ? '...' : 'Track'}
           </button>
         </div>

@@ -1,7 +1,6 @@
 'use client'
 import { X, Plus, Minus, ShoppingBag, Trash2 } from 'lucide-react'
 import Link from 'next/link'
-
 import { CartItem } from '@/context/CartContext'
 
 interface CartDrawerProps {
@@ -12,6 +11,16 @@ interface CartDrawerProps {
   onRemove: (id: string) => void
   deliveryFee: number
   minimumOrder: number
+}
+
+const getEmoji = (name: string) => {
+  const n = name.toLowerCase()
+  if (n.includes('mala')) return '🌶️'
+  if (n.includes('tom yam')) return '🍋'
+  if (n.includes('curry')) return '🍛'
+  if (n.includes('laksa') || n.includes('pho') || n.includes('soup')) return '🍲'
+  if (n.includes('sauce') || n.includes('hoisin') || n.includes('xo')) return '🫙'
+  return '🍱'
 }
 
 export default function CartDrawer({
@@ -26,59 +35,134 @@ export default function CartDrawer({
       {/* Overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/40 z-40 transition-opacity"
           onClick={onClose}
+          style={{
+            position: 'fixed', inset: 0,
+            background: 'rgba(0,0,0,0.45)',
+            zIndex: 40, backdropFilter: 'blur(2px)',
+          }}
         />
       )}
 
       {/* Drawer */}
-      <div className={`fixed top-0 right-0 h-full w-full max-w-sm bg-white z-50 shadow-2xl flex flex-col transition-transform duration-300 ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+      <div style={{
+        position: 'fixed', top: 0, right: 0,
+        height: '100%', width: '100%', maxWidth: '400px',
+        background: 'white', zIndex: 50,
+        boxShadow: '-4px 0 32px rgba(0,0,0,0.12)',
+        display: 'flex', flexDirection: 'column',
+        transform: isOpen ? 'translateX(0)' : 'translateX(100%)',
+        transition: 'transform 0.3s ease',
+      }}>
+
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b">
-          <h2 className="font-bold text-lg flex items-center gap-2">
-            <ShoppingBag size={20} style={{color: 'var(--orange)'}} />
-            Your Cart
-          </h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
-            <X size={24} />
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '20px 24px',
+          borderBottom: '1.5px solid #F0E0CC',
+          background: '#FFFBF5',
+        }}>
+          <div style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
+            <div style={{
+              width: '36px', height: '36px', borderRadius: '10px',
+              background: 'linear-gradient(135deg, #F97316, #EA580C)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <ShoppingBag size={18} color="white" />
+            </div>
+            <div>
+              <p style={{fontWeight: 900, fontSize: '16px', color: '#1C1917'}}>Your Cart</p>
+              <p style={{fontSize: '12px', color: '#78716C'}}>
+                {cart.length === 0 ? 'Empty' : `${cart.reduce((s, i) => s + i.quantity, 0)} items`}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            style={{
+              width: '36px', height: '36px', borderRadius: '10px',
+              background: '#F5F5F4', border: 'none',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer', color: '#78716C',
+            }}
+          >
+            <X size={20} />
           </button>
         </div>
 
         {/* Items */}
-        <div className="flex-1 overflow-y-auto px-5 py-4">
+        <div style={{flex: 1, overflowY: 'auto', padding: '16px 24px'}}>
           {cart.length === 0 ? (
-            <div className="text-center py-20 text-gray-400">
-              <ShoppingBag size={48} className="mx-auto mb-3 opacity-30" />
-              <p>Your cart is empty</p>
+            <div style={{textAlign: 'center', padding: '60px 0', color: '#A8A29E'}}>
+              <ShoppingBag size={48} style={{margin: '0 auto 12px', opacity: 0.3, display: 'block'}} />
+              <p style={{fontWeight: 600, fontSize: '15px'}}>Your cart is empty</p>
+              <p style={{fontSize: '13px', marginTop: '4px'}}>Add some products to get started</p>
             </div>
           ) : (
-            <div className="flex flex-col gap-4">
+            <div style={{display: 'flex', flexDirection: 'column', gap: '16px'}}>
               {cart.map(item => (
-                <div key={item.id} className="flex gap-3 items-center">
-                  <div className="w-14 h-14 rounded-lg bg-orange-50 flex items-center justify-center flex-shrink-0 text-2xl">
-                    🍱
+                <div key={item.id} style={{
+                  display: 'flex', gap: '14px', alignItems: 'center',
+                  padding: '14px', borderRadius: '16px',
+                  background: '#FFFBF5', border: '1.5px solid #F0E0CC',
+                }}>
+                  {/* Image */}
+                  <div style={{
+                    width: '56px', height: '56px', borderRadius: '12px',
+                    background: 'linear-gradient(135deg, #FFF7ED, #FFEDD5)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    flexShrink: 0, overflow: 'hidden',
+                    border: '1px solid #F0E0CC',
+                  }}>
+                    {item.image_url
+                      ? <img src={item.image_url} alt={item.name} style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+                      : <span style={{fontSize: '26px'}}>{getEmoji(item.name)}</span>
+                    }
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-sm leading-tight truncate">{item.name}</p>
-                    <p className="text-sm text-gray-500">NZ${item.price.toFixed(2)}</p>
+
+                  {/* Info */}
+                  <div style={{flex: 1, minWidth: 0}}>
+                    <p style={{fontWeight: 700, fontSize: '13px', color: '#1C1917', lineHeight: 1.3, marginBottom: '2px'}}>{item.name}</p>
+                    <p style={{fontSize: '13px', color: '#F97316', fontWeight: 700}}>NZ${item.price.toFixed(2)}</p>
                   </div>
-                  <div className="flex items-center gap-2">
+
+                  {/* Controls */}
+                  <div style={{display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0}}>
                     <button
                       onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
-                      className="w-7 h-7 rounded-full border-2 border-gray-200 flex items-center justify-center hover:border-orange-400 transition-colors"
+                      style={{
+                        width: '28px', height: '28px', borderRadius: '8px',
+                        border: '1.5px solid #F0E0CC', background: 'white',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        cursor: 'pointer', color: '#78716C',
+                      }}
                     >
                       <Minus size={12} />
                     </button>
-                    <span className="w-5 text-center text-sm font-semibold">{item.quantity}</span>
+                    <span style={{fontSize: '14px', fontWeight: 700, color: '#1C1917', minWidth: '16px', textAlign: 'center'}}>
+                      {item.quantity}
+                    </span>
                     <button
                       onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
-                      className="w-7 h-7 rounded-full border-2 border-gray-200 flex items-center justify-center hover:border-orange-400 transition-colors"
+                      style={{
+                        width: '28px', height: '28px', borderRadius: '8px',
+                        border: '1.5px solid #F0E0CC', background: 'white',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        cursor: 'pointer', color: '#78716C',
+                      }}
                     >
                       <Plus size={12} />
                     </button>
                     <button
                       onClick={() => onRemove(item.id)}
-                      className="w-7 h-7 flex items-center justify-center text-gray-300 hover:text-red-400 transition-colors ml-1"
+                      style={{
+                        width: '28px', height: '28px', borderRadius: '8px',
+                        border: 'none', background: 'transparent',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        cursor: 'pointer', color: '#D1C5BC', marginLeft: '2px',
+                      }}
+                      onMouseEnter={e => (e.currentTarget.style.color = '#EF4444')}
+                      onMouseLeave={e => (e.currentTarget.style.color = '#D1C5BC')}
                     >
                       <Trash2 size={14} />
                     </button>
@@ -91,31 +175,56 @@ export default function CartDrawer({
 
         {/* Footer */}
         {cart.length > 0 && (
-          <div className="px-5 py-4 border-t bg-gray-50">
+          <div style={{
+            padding: '20px 24px',
+            borderTop: '1.5px solid #F0E0CC',
+            background: '#FFFBF5',
+          }}>
             {belowMinimum && (
-              <div className="bg-orange-50 border border-orange-200 rounded-lg px-3 py-2 mb-3 text-sm text-orange-700">
-                Minimum order is NZ${minimumOrder.toFixed(2)}. Add NZ${(minimumOrder - subtotal).toFixed(2)} more.
+              <div style={{
+                background: '#FFF7ED', border: '1.5px solid #FED7AA',
+                borderRadius: '12px', padding: '12px 14px',
+                marginBottom: '16px', fontSize: '13px', color: '#C2410C',
+                fontWeight: 600,
+              }}>
+                ⚠️ Minimum order is NZ${minimumOrder.toFixed(2)}. Add NZ${(minimumOrder - subtotal).toFixed(2)} more.
               </div>
             )}
-            <div className="flex justify-between text-sm text-gray-600 mb-1">
-              <span>Subtotal</span>
-              <span>NZ${subtotal.toFixed(2)}</span>
+
+            <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '8px'}}>
+              <span style={{fontSize: '13px', color: '#78716C'}}>Subtotal</span>
+              <span style={{fontSize: '13px', color: '#1C1917', fontWeight: 600}}>NZ${subtotal.toFixed(2)}</span>
             </div>
-            <div className="flex justify-between text-sm text-gray-600 mb-3">
-              <span>Delivery fee</span>
-              <span>NZ${deliveryFee.toFixed(2)}</span>
+            <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '16px'}}>
+              <span style={{fontSize: '13px', color: '#78716C'}}>Delivery fee</span>
+              <span style={{fontSize: '13px', color: '#1C1917', fontWeight: 600}}>NZ${deliveryFee.toFixed(2)}</span>
             </div>
-            <div className="flex justify-between font-bold text-base mb-4">
-              <span>Total</span>
-              <span style={{color: 'var(--orange)'}}>NZ${total.toFixed(2)}</span>
+            <div style={{
+              display: 'flex', justifyContent: 'space-between',
+              paddingTop: '14px', borderTop: '1.5px solid #F0E0CC',
+              marginBottom: '20px',
+            }}>
+              <span style={{fontSize: '16px', fontWeight: 900, color: '#1C1917'}}>Total</span>
+              <span style={{fontSize: '16px', fontWeight: 900, color: '#F97316'}}>NZ${total.toFixed(2)}</span>
             </div>
+
             <Link
               href="/checkout"
               onClick={onClose}
-              className={`btn-primary w-full text-center block text-sm ${belowMinimum ? 'opacity-50 pointer-events-none' : ''}`}
+              style={{
+                display: 'block', textAlign: 'center',
+                background: belowMinimum ? '#D1C5BC' : '#F97316',
+                color: 'white', borderRadius: '14px',
+                padding: '16px', fontWeight: 700, fontSize: '15px',
+                textDecoration: 'none',
+                pointerEvents: belowMinimum ? 'none' : 'auto',
+              }}
             >
-              Proceed to Checkout
+              Proceed to Checkout →
             </Link>
+            <p style={{textAlign: 'center', fontSize: '12px', color: '#A8A29E', marginTop: '10px'}}>
+              💵 Pay on delivery · Cash or bank transfer
+            </p>
           </div>
         )}
       </div>

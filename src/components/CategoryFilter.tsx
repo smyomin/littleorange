@@ -22,28 +22,40 @@ const categoryEmoji: Record<string, string> = {
 
 export default function CategoryFilter({ categories, selected, onSelect }: CategoryFilterProps) {
   return (
-    <div className="flex gap-2 flex-wrap">
+    <div style={{display: 'flex', gap: '10px', flexWrap: 'wrap'}}>
       <button
         onClick={() => onSelect('all')}
-        className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold border-2 transition-all"
-        style={selected === 'all'
-          ? {background: 'var(--orange)', color: 'white', borderColor: 'var(--orange)'}
-          : {background: 'white', color: 'var(--muted)', borderColor: 'var(--border)'}
-        }
+        style={{
+          display: 'flex', alignItems: 'center', gap: '8px',
+          padding: '10px 18px', borderRadius: '999px',
+          fontSize: '14px', fontWeight: 700,
+          border: '2px solid',
+          cursor: 'pointer', transition: 'all 0.2s',
+          borderColor: selected === 'all' ? '#F97316' : '#F0E0CC',
+          background: selected === 'all' ? '#F97316' : 'white',
+          color: selected === 'all' ? 'white' : '#78716C',
+        }}
       >
-        🛒 All
+        <span style={{fontSize: '16px'}}>🛒</span>
+        <span>All</span>
       </button>
       {categories.map(cat => (
         <button
           key={cat.id}
           onClick={() => onSelect(cat.slug)}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold border-2 transition-all"
-          style={selected === cat.slug
-            ? {background: 'var(--orange)', color: 'white', borderColor: 'var(--orange)'}
-            : {background: 'white', color: 'var(--muted)', borderColor: 'var(--border)'}
-          }
+          style={{
+            display: 'flex', alignItems: 'center', gap: '8px',
+            padding: '10px 18px', borderRadius: '999px',
+            fontSize: '14px', fontWeight: 700,
+            border: '2px solid',
+            cursor: 'pointer', transition: 'all 0.2s',
+            borderColor: selected === cat.slug ? '#F97316' : '#F0E0CC',
+            background: selected === cat.slug ? '#F97316' : 'white',
+            color: selected === cat.slug ? 'white' : '#78716C',
+          }}
         >
-          {categoryEmoji[cat.slug] ?? '🍱'} {cat.name}
+          <span style={{fontSize: '16px'}}>{categoryEmoji[cat.slug] ?? '🍱'}</span>
+          <span>{cat.name}</span>
         </button>
       ))}
     </div>
