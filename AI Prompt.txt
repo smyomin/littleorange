@@ -18,6 +18,10 @@ FYI, I already created vercel and supabase account and installed VS code, Node.J
 
 Please let me know what to do first step.
 
+git add .
+git commit -m "connect supabase"
+git push
+
 
 Project URL
 https://iowujcfmlatazutscvgr.supabase.co
@@ -32,3 +36,13 @@ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlvd3VqY2Z
 
 NEXT_PUBLIC_SUPABASE_URL=https://iowujcfmlatazutscvgr.supabase.co
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_leclq3Kk8LdtBp-Bj5SRVw_sOiOKfQv
+
+NEXT_PUBLIC_ADMIN_PASSWORD=Billion$20260527#
+
+
+https://encrypt-online.com/
+password = littleorange2026
+passcode = 4dbd4ab1-3525-45b4-ae03-a151a2b39c68
+U2FsdGVkX197NCicI7qXgS1Rj8Pg9eAti76y1TifAADvNONDoUjznwTddF1PA5/4
+
+
