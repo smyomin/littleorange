@@ -17,19 +17,17 @@ interface Settings {
 export default function CheckoutPage() {
   const router = useRouter()
   const { cart, clearCart, subtotal } = useCart()
-  const [settings, setSettings] = useState<Settings>({ delivery_fee: 5, minimum_order: 30, store_phone: '', store_email: '' })
+  const [settings, setSettings] = useState<Settings>({
+    delivery_fee: 5, minimum_order: 30, store_phone: '', store_email: ''
+  })
   const [loading, setLoading] = useState(false)
   const [orderPlaced, setOrderPlaced] = useState(false)
   const [orderNumber, setOrderNumber] = useState('')
   const [whatsappUrl, setWhatsappUrl] = useState('')
 
   const [form, setForm] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    address: '',
-    payment_method: 'cash',
-    notes: ''
+    name: '', email: '', phone: '',
+    address: '', payment_method: 'cash', notes: ''
   })
 
   useEffect(() => {
@@ -42,7 +40,7 @@ export default function CheckoutPage() {
 
   useEffect(() => {
     if (cart.length === 0 && !orderPlaced) router.push('/')
-  }, [cart, orderPlaced])
+  }, [cart, orderPlaced, router])
 
   const total = subtotal + settings.delivery_fee
 
@@ -56,7 +54,8 @@ export default function CheckoutPage() {
 
   function buildWhatsappMessage(orderNum: string) {
     const items = cart.map(item => `• ${item.name} x${item.quantity} — NZ$${(item.price * item.quantity).toFixed(2)}`).join('\n')
-    const message = `🍊 *Little Orange Order Confirmation*\n\n` +
+    const message =
+      `🍊 *Little Orange Order Confirmation*\n\n` +
       `Order: *${orderNum}*\n\n` +
       `*Items:*\n${items}\n\n` +
       `Subtotal: NZ$${subtotal.toFixed(2)}\n` +
@@ -73,7 +72,6 @@ export default function CheckoutPage() {
       alert('Please fill in all required fields.')
       return
     }
-
     setLoading(true)
     const orderNum = generateOrderNumber()
 
@@ -98,12 +96,9 @@ export default function CheckoutPage() {
       return
     }
 
-    // Reduce stock count for each item
+    // Reduce stock
     for (const item of cart) {
-      await supabase.rpc('decrement_stock', {
-        product_id: item.id,
-        amount: item.quantity
-      })
+      await supabase.rpc('decrement_stock', { product_id: item.id, amount: item.quantity })
     }
 
     // Send email notification
@@ -139,31 +134,66 @@ export default function CheckoutPage() {
     setLoading(false)
   }
 
+  const inputStyle = {
+    width: '100%', padding: '12px 16px',
+    borderRadius: '12px', border: '2px solid #F0E0CC',
+    fontSize: '14px', color: '#1C1917',
+    background: 'white', outline: 'none',
+    boxSizing: 'border-box' as const,
+    fontFamily: 'inherit',
+  }
+
+  const labelStyle = {
+    fontSize: '13px', fontWeight: 600 as const,
+    color: '#78716C', display: 'block' as const,
+    marginBottom: '6px',
+  }
+
   if (orderPlaced) {
     return (
-      <div className="min-h-screen flex flex-col">
+      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#FFFBF5' }}>
         <Header />
-        <main className="flex-1 max-w-lg mx-auto px-4 py-12 w-full">
-          <div className="card p-8 text-center">
-            <CheckCircle size={64} className="mx-auto mb-4" style={{color: 'var(--orange)'}} />
-            <h1 className="text-2xl font-bold mb-2">Order Placed! 🎉</h1>
-            <p className="text-gray-500 mb-1">Your order number is:</p>
-            <p className="text-2xl font-bold mb-6" style={{color: 'var(--orange)'}}>{orderNumber}</p>
-            <p className="text-gray-600 text-sm mb-6">
-              We'll confirm your order shortly. Share your order on WhatsApp to speed things up!
+        <main style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 24px' }}>
+          <div style={{
+            background: 'white', borderRadius: '24px',
+            padding: '48px 40px', maxWidth: '480px', width: '100%',
+            border: '1.5px solid #F0E0CC', textAlign: 'center',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.06)',
+          }}>
+            <CheckCircle size={64} style={{ margin: '0 auto 16px', display: 'block', color: '#16A34A' }} />
+            <h1 style={{ fontSize: '1.75rem', fontWeight: 900, color: '#1C1917', marginBottom: '8px' }}>
+              Order Placed! 🎉
+            </h1>
+            <p style={{ color: '#78716C', marginBottom: '6px', fontSize: '14px' }}>Your order number is:</p>
+            <p style={{ fontSize: '2rem', fontWeight: 900, color: '#F97316', marginBottom: '20px' }}>
+              {orderNumber}
+            </p>
+            <p style={{ color: '#78716C', fontSize: '14px', marginBottom: '28px', lineHeight: 1.6 }}>
+              We&apos;ll confirm your order shortly. Share your order on WhatsApp to speed things up!
             </p>
             
               <a href={whatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="btn-primary flex items-center justify-center gap-2 w-full mb-4 text-white no-underline"
+              style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
+                background: '#16A34A', color: 'white',
+                padding: '16px', borderRadius: '14px',
+                fontWeight: 700, fontSize: '15px',
+                textDecoration: 'none', marginBottom: '12px',
+              }}
             >
               <MessageCircle size={20} />
               Share Order on WhatsApp
             </a>
             <button
               onClick={() => router.push('/')}
-              className="btn-outline w-full"
+              style={{
+                width: '100%', background: 'transparent',
+                border: '2px solid #F0E0CC', borderRadius: '14px',
+                padding: '14px', fontWeight: 700, fontSize: '14px',
+                color: '#78716C', cursor: 'pointer',
+              }}
             >
               Continue Shopping
             </button>
@@ -175,139 +205,178 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#FFFBF5' }}>
       <Header />
-      <main className="flex-1 max-w-2xl mx-auto px-4 py-8 w-full">
-        <h1 className="text-2xl font-bold mb-6 flex items-center gap-2">
-          <ShoppingBag size={24} style={{color: 'var(--orange)'}} />
-          Checkout
-        </h1>
 
-        <div className="grid md:grid-cols-2 gap-6">
-          {/* Left — Form */}
-          <div className="flex flex-col gap-4">
-            <div className="card p-5">
-              <h2 className="font-bold mb-4 text-gray-700">Delivery Details</h2>
-              <div className="flex flex-col gap-3">
-                <div>
-                  <label className="text-sm font-medium text-gray-600 block mb-1">Full Name *</label>
-                  <input
-                    name="name"
-                    value={form.name}
-                    onChange={handleChange}
-                    placeholder="Your full name"
-                    className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:border-orange-400"
-                  />
+      <main style={{ flex: 1 }}>
+        <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '40px 24px' }}>
+
+          <h1 style={{
+            fontSize: '1.75rem', fontWeight: 900, color: '#1C1917',
+            marginBottom: '28px', display: 'flex', alignItems: 'center', gap: '10px',
+          }}>
+            <ShoppingBag size={24} style={{ color: '#F97316' }} />
+            Checkout
+          </h1>
+
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+            gap: '24px',
+            alignItems: 'start',
+          }}>
+
+            {/* Left — Form */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+
+              {/* Delivery Details */}
+              <div style={{ background: 'white', borderRadius: '20px', padding: '24px', border: '1.5px solid #F0E0CC' }}>
+                <p style={{ fontSize: '11px', fontWeight: 700, color: '#F97316', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '18px' }}>
+                  Delivery Details
+                </p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                  <div>
+                    <label style={labelStyle}>Full Name *</label>
+                    <input name="name" value={form.name} onChange={handleChange}
+                      placeholder="Your full name" style={inputStyle}
+                      onFocus={e => (e.target.style.borderColor = '#F97316')}
+                      onBlur={e => (e.target.style.borderColor = '#F0E0CC')} />
+                  </div>
+                  <div>
+                    <label style={labelStyle}>Email *</label>
+                    <input name="email" type="email" value={form.email} onChange={handleChange}
+                      placeholder="your@email.com" style={inputStyle}
+                      onFocus={e => (e.target.style.borderColor = '#F97316')}
+                      onBlur={e => (e.target.style.borderColor = '#F0E0CC')} />
+                  </div>
+                  <div>
+                    <label style={labelStyle}>Phone</label>
+                    <input name="phone" value={form.phone} onChange={handleChange}
+                      placeholder="+64 21 123 4567" style={inputStyle}
+                      onFocus={e => (e.target.style.borderColor = '#F97316')}
+                      onBlur={e => (e.target.style.borderColor = '#F0E0CC')} />
+                  </div>
+                  <div>
+                    <label style={labelStyle}>Delivery Address *</label>
+                    <textarea name="address" value={form.address} onChange={handleChange}
+                      placeholder="Street address, suburb, city" rows={3}
+                      style={{ ...inputStyle, resize: 'none' }}
+                      onFocus={e => (e.target.style.borderColor = '#F97316')}
+                      onBlur={e => (e.target.style.borderColor = '#F0E0CC')} />
+                  </div>
                 </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-600 block mb-1">Email *</label>
-                  <input
-                    name="email"
-                    type="email"
-                    value={form.email}
-                    onChange={handleChange}
-                    placeholder="your@email.com"
-                    className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:border-orange-400"
-                  />
+              </div>
+
+              {/* Payment Method */}
+              <div style={{ background: 'white', borderRadius: '20px', padding: '24px', border: '1.5px solid #F0E0CC' }}>
+                <p style={{ fontSize: '11px', fontWeight: 700, color: '#F97316', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '18px' }}>
+                  Payment Method
+                </p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  {[
+                    { value: 'cash', label: '💵 Cash on Delivery' },
+                    { value: 'bank_transfer', label: '🏦 Bank Transfer on Delivery' },
+                  ].map(method => (
+                    <label key={method.value} style={{
+                      display: 'flex', alignItems: 'center', gap: '12px',
+                      padding: '14px 16px', borderRadius: '12px',
+                      border: `2px solid ${form.payment_method === method.value ? '#F97316' : '#F0E0CC'}`,
+                      background: form.payment_method === method.value ? '#FFF7ED' : 'white',
+                      cursor: 'pointer', transition: 'all 0.2s',
+                    }}>
+                      <input
+                        type="radio" name="payment_method"
+                        value={method.value}
+                        checked={form.payment_method === method.value}
+                        onChange={handleChange}
+                        style={{ accentColor: '#F97316', width: '16px', height: '16px' }}
+                      />
+                      <span style={{ fontSize: '14px', fontWeight: 600, color: '#1C1917' }}>{method.label}</span>
+                    </label>
+                  ))}
                 </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-600 block mb-1">Phone</label>
-                  <input
-                    name="phone"
-                    value={form.phone}
-                    onChange={handleChange}
-                    placeholder="+64 21 123 4567"
-                    className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:border-orange-400"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-600 block mb-1">Delivery Address *</label>
-                  <textarea
-                    name="address"
-                    value={form.address}
-                    onChange={handleChange}
-                    placeholder="Street address, suburb, city"
-                    rows={3}
-                    className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:border-orange-400 resize-none"
-                  />
-                </div>
+              </div>
+
+              {/* Notes */}
+              <div style={{ background: 'white', borderRadius: '20px', padding: '24px', border: '1.5px solid #F0E0CC' }}>
+                <p style={{ fontSize: '11px', fontWeight: 700, color: '#F97316', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '18px' }}>
+                  Notes (optional)
+                </p>
+                <textarea name="notes" value={form.notes} onChange={handleChange}
+                  placeholder="Any special instructions..."
+                  rows={3} style={{ ...inputStyle, resize: 'none' }}
+                  onFocus={e => (e.target.style.borderColor = '#F97316')}
+                  onBlur={e => (e.target.style.borderColor = '#F0E0CC')} />
               </div>
             </div>
 
-            <div className="card p-5">
-              <h2 className="font-bold mb-4 text-gray-700">Payment Method</h2>
-              <div className="flex flex-col gap-2">
-                {['cash', 'bank_transfer'].map(method => (
-                  <label key={method} className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${form.payment_method === method ? 'border-orange-400 bg-orange-50' : 'border-gray-200'}`}>
-                    <input
-                      type="radio"
-                      name="payment_method"
-                      value={method}
-                      checked={form.payment_method === method}
-                      onChange={handleChange}
-                      className="accent-orange-500"
-                    />
-                    <span className="text-sm font-medium">
-                      {method === 'cash' ? '💵 Cash on Delivery' : '🏦 Bank Transfer on Delivery'}
-                    </span>
-                  </label>
-                ))}
-              </div>
-            </div>
+            {/* Right — Order Summary */}
+            <div style={{
+              background: 'white', borderRadius: '20px',
+              padding: '24px', border: '1.5px solid #F0E0CC',
+              position: 'sticky', top: '80px',
+            }}>
+              <p style={{ fontSize: '11px', fontWeight: 700, color: '#F97316', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '18px' }}>
+                Order Summary
+              </p>
 
-            <div className="card p-5">
-              <h2 className="font-bold mb-3 text-gray-700">Notes (optional)</h2>
-              <textarea
-                name="notes"
-                value={form.notes}
-                onChange={handleChange}
-                placeholder="Any special instructions..."
-                rows={2}
-                className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:border-orange-400 resize-none"
-              />
-            </div>
-          </div>
-
-          {/* Right — Order Summary */}
-          <div>
-            <div className="card p-5 sticky top-24">
-              <h2 className="font-bold mb-4 text-gray-700">Order Summary</h2>
-              <div className="flex flex-col gap-3 mb-4">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '16px' }}>
                 {cart.map(item => (
-                  <div key={item.id} className="flex justify-between text-sm">
-                    <span className="text-gray-600">{item.name} <span className="text-gray-400">x{item.quantity}</span></span>
-                    <span className="font-medium">NZ${(item.price * item.quantity).toFixed(2)}</span>
+                  <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px' }}>
+                    <span style={{ color: '#78716C' }}>
+                      {item.name}
+                      <span style={{ color: '#A8A29E', marginLeft: '4px' }}>x{item.quantity}</span>
+                    </span>
+                    <span style={{ fontWeight: 600, color: '#1C1917' }}>
+                      NZ${(item.price * item.quantity).toFixed(2)}
+                    </span>
                   </div>
                 ))}
               </div>
-              <div className="border-t pt-3 flex flex-col gap-2">
-                <div className="flex justify-between text-sm text-gray-600">
+
+              <div style={{ borderTop: '1.5px solid #F0E0CC', paddingTop: '14px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: '#78716C' }}>
                   <span>Subtotal</span>
                   <span>NZ${subtotal.toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between text-sm text-gray-600">
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: '#78716C' }}>
                   <span>Delivery fee</span>
                   <span>NZ${settings.delivery_fee.toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between font-bold text-base mt-1">
-                  <span>Total</span>
-                  <span style={{color: 'var(--orange)'}}>NZ${total.toFixed(2)}</span>
+                <div style={{
+                  display: 'flex', justifyContent: 'space-between',
+                  fontSize: '17px', fontWeight: 900,
+                  paddingTop: '10px', borderTop: '1.5px solid #F0E0CC',
+                  marginTop: '4px',
+                }}>
+                  <span style={{ color: '#1C1917' }}>Total</span>
+                  <span style={{ color: '#F97316' }}>NZ${total.toFixed(2)}</span>
                 </div>
               </div>
+
               <button
                 onClick={handleSubmit}
                 disabled={loading}
-                className="btn-primary w-full mt-5 text-sm"
+                style={{
+                  width: '100%', background: '#F97316', color: 'white',
+                  border: 'none', borderRadius: '14px', padding: '16px',
+                  fontWeight: 700, fontSize: '15px', cursor: 'pointer',
+                  marginTop: '20px', opacity: loading ? 0.7 : 1,
+                  transition: 'all 0.2s',
+                }}
+                onMouseEnter={e => { if (!loading) e.currentTarget.style.background = '#EA6C0A' }}
+                onMouseLeave={e => { e.currentTarget.style.background = '#F97316' }}
               >
                 {loading ? 'Placing Order...' : 'Place Order'}
               </button>
-              <p className="text-xs text-gray-400 text-center mt-3">
-                Payment collected on delivery · NZD
+              <p style={{ textAlign: 'center', fontSize: '12px', color: '#A8A29E', marginTop: '10px' }}>
+                💵 Payment collected on delivery · NZD
               </p>
             </div>
           </div>
         </div>
       </main>
+
       <Footer />
     </div>
   )

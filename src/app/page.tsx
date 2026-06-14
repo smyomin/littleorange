@@ -8,6 +8,8 @@ import CategoryFilter from '@/components/CategoryFilter'
 import CartDrawer from '@/components/CartDrawer'
 import { useCart } from '@/context/CartContext'
 import { Search } from 'lucide-react'
+import ProductModal from '@/components/ProductModal'
+
 
 interface Product {
   id: string
@@ -36,8 +38,8 @@ export default function Home() {
   const [deliveryFee, setDeliveryFee] = useState(5.00)
   const [minimumOrder, setMinimumOrder] = useState(30.00)
   const [popularIds, setPopularIds] = useState<string[]>([])
-
   const { cart, addToCart, updateQuantity, removeFromCart, cartCount } = useCart()
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
 
   useEffect(() => { fetchData() }, [])
 
@@ -259,7 +261,16 @@ export default function Home() {
                           ⭐ #1 Best Seller
                         </div>
                       )}
-                      <ProductCard product={product} onAddToCart={addToCart} />
+                      <ProductCard
+                        product={product}
+                        onAddToCart={addToCart}
+                        onViewDetails={setSelectedProduct}
+                      />
+                      <ProductModal
+                      product={selectedProduct}
+                      onClose={() => setSelectedProduct(null)}
+                      onAddToCart={addToCart}
+                    />
                     </div>
                   ))
                 }
@@ -302,7 +313,12 @@ export default function Home() {
               gap: '20px',
             }}>
               {filtered.map(product => (
-                <ProductCard key={product.id} product={product} onAddToCart={addToCart} />
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onAddToCart={addToCart}
+                  onViewDetails={setSelectedProduct}
+                />
               ))}
             </div>
           )}
