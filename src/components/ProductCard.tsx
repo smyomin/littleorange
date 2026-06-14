@@ -102,7 +102,18 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
           </span>
           {product.in_stock ? (
             <button
-              onClick={() => onAddToCart(product)}
+              onClick={(e) => {
+                onAddToCart(product)
+                const btn = e.currentTarget
+                btn.style.transform = 'scale(0.85)'
+                btn.style.background = '#16A34A'
+                btn.innerHTML = '✓ Added'
+                setTimeout(() => {
+                  btn.style.transform = 'scale(1)'
+                  btn.style.background = '#F97316'
+                  btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg> Add'
+                }, 1000)
+              }}
               style={{
                 display: 'flex', alignItems: 'center', gap: '6px',
                 background: '#F97316', color: 'white',
@@ -110,14 +121,6 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
                 padding: '8px 14px', fontSize: '13px',
                 fontWeight: 700, cursor: 'pointer',
                 transition: 'all 0.2s',
-              }}
-              onMouseEnter={e => {
-                e.currentTarget.style.background = '#EA6C0A'
-                e.currentTarget.style.transform = 'scale(1.05)'
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.background = '#F97316'
-                e.currentTarget.style.transform = 'scale(1)'
               }}
             >
               <ShoppingCart size={14} />

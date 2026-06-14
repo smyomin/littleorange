@@ -11,12 +11,13 @@ interface Settings {
   delivery_fee: number
   minimum_order: number
   store_phone: string
+  store_email: string
 }
 
 export default function CheckoutPage() {
   const router = useRouter()
   const { cart, clearCart, subtotal } = useCart()
-  const [settings, setSettings] = useState<Settings>({ delivery_fee: 5, minimum_order: 30, store_phone: '' })
+  const [settings, setSettings] = useState<Settings>({ delivery_fee: 5, minimum_order: 30, store_phone: '', store_email: '' })
   const [loading, setLoading] = useState(false)
   const [orderPlaced, setOrderPlaced] = useState(false)
   const [orderNumber, setOrderNumber] = useState('')
@@ -95,6 +96,39 @@ export default function CheckoutPage() {
       alert('Something went wrong. Please try again.')
       setLoading(false)
       return
+    }
+
+    // Reduce stock count for each item
+    for (const item of cart) {
+      await supabase.rpc('decrement_stock', {
+        product_id: item.id,
+        amount: item.quantity
+      })
+    }
+
+    // Send email notification
+    try {
+      await fetch('/api/notify-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          order: {
+            order_number: orderNum,
+            customer_name: form.name,
+            customer_email: form.email,
+            customer_phone: form.phone,
+            delivery_address: form.address,
+            items: cart,
+            subtotal,
+            delivery_fee: settings.delivery_fee,
+            total,
+            payment_method: form.payment_method,
+          },
+          storeEmail: settings.store_email
+        })
+      })
+    } catch (e) {
+      console.log('Email notification failed:', e)
     }
 
     const waUrl = buildWhatsappMessage(orderNum)

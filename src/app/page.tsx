@@ -35,16 +35,18 @@ export default function Home() {
   const [loading, setLoading] = useState(true)
   const [deliveryFee, setDeliveryFee] = useState(5.00)
   const [minimumOrder, setMinimumOrder] = useState(30.00)
+  const [popularIds, setPopularIds] = useState<string[]>([])
 
   const { cart, addToCart, updateQuantity, removeFromCart, cartCount } = useCart()
 
   useEffect(() => { fetchData() }, [])
 
   async function fetchData() {
-    const [{ data: productsData }, { data: categoriesData }, { data: settingsData }] = await Promise.all([
+    const [{ data: productsData }, { data: categoriesData }, { data: settingsData }, { data: ordersData }] = await Promise.all([
       supabase.from('products').select('*, categories(name)').eq('in_stock', true),
       supabase.from('categories').select('*').order('name'),
-      supabase.from('settings').select('*').single()
+      supabase.from('settings').select('*').single(),
+      supabase.from('orders').select('items').eq('status', 'delivered'),
     ])
     setProducts(productsData || [])
     setCategories(categoriesData || [])
@@ -52,6 +54,22 @@ export default function Home() {
       setDeliveryFee(settingsData.delivery_fee)
       setMinimumOrder(settingsData.minimum_order)
     }
+
+    // Calculate popular items from delivered orders
+    if (ordersData) {
+      const counts: Record<string, number> = {}
+      ordersData.forEach((order: { items: { id: string; quantity: number }[] }) => {
+        order.items.forEach(item => {
+          counts[item.id] = (counts[item.id] || 0) + item.quantity
+        })
+      })
+      const sorted = Object.entries(counts)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 4)
+        .map(([id]) => id)
+      setPopularIds(sorted)
+    }
+
     setLoading(false)
   }
 
@@ -205,7 +223,50 @@ export default function Home() {
               onSelect={setSelectedCategory}
             />
           </div>
-
+{/* Popular Items */}
+          {popularIds.length > 0 && (
+            <div style={{marginBottom: '40px'}}>
+              <div style={{display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px'}}>
+                <span style={{fontSize: '20px'}}>🔥</span>
+                <h2 style={{fontWeight: 900, fontSize: '18px', color: '#1C1917'}}>Most Popular</h2>
+                <span style={{
+                  padding: '3px 10px', borderRadius: '999px',
+                  background: '#FFF7ED', color: '#F97316',
+                  fontSize: '11px', fontWeight: 700, border: '1px solid #FED7AA',
+                }}>
+                  Customer Favourites
+                </span>
+              </div>
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
+                gap: '20px',
+              }}>
+                {products
+                  .filter(p => popularIds.includes(p.id))
+                  .sort((a, b) => popularIds.indexOf(a.id) - popularIds.indexOf(b.id))
+                  .map((product, index) => (
+                    <div key={product.id} style={{position: 'relative'}}>
+                      {index === 0 && (
+                        <div style={{
+                          position: 'absolute', top: '-10px', left: '12px',
+                          zIndex: 10, background: '#F97316', color: 'white',
+                          fontSize: '10px', fontWeight: 900, padding: '3px 10px',
+                          borderRadius: '999px', letterSpacing: '0.05em',
+                          textTransform: 'uppercase',
+                        }}>
+                          ⭐ #1 Best Seller
+                        </div>
+                      )}
+                      <ProductCard product={product} onAddToCart={addToCart} />
+                    </div>
+                  ))
+                }
+              </div>
+              <div style={{borderBottom: '1.5px solid #F0E0CC', marginTop: '40px', marginBottom: '8px'}} />
+            </div>
+          )}
+          
           {/* Result count */}
           {!loading && (
             <p style={{fontSize: '13px', color: '#78716C', marginBottom: '20px', fontWeight: 500}}>
