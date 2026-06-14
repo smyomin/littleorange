@@ -69,7 +69,8 @@ export default function TrackPage() {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <main style={{flex: 1, maxWidth: '760px', margin: '0 auto', padding: '48px 24px', width: '100%'}}>
+      <main style={{flex: 1, width: '100%'}}>
+        <div style={{maxWidth: '760px', margin: '0 auto', padding: '48px 24px'}}>
         <h1 style={{fontSize: '1.75rem', fontWeight: 900, color: '#1C1917', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '10px'}}>
           <Package size={24} style={{color: '#F97316'}} />
           Track Your Order
@@ -117,18 +118,18 @@ export default function TrackPage() {
 
         {/* Not Found */}
         {notFound && (
-          <div className="card p-6 text-center text-gray-500">
-            <XCircle size={40} className="mx-auto mb-3 text-gray-300" />
-            <p className="font-medium">No order found</p>
-            <p className="text-sm mt-1">Check your order number or email and try again.</p>
+          <div style={{background: 'white', borderRadius: '20px', border: '1.5px solid #F0E0CC', padding: '40px', textAlign: 'center'}}>
+            <XCircle size={40} style={{margin: '0 auto 12px', display: 'block', color: '#D1C5BC'}} />
+            <p style={{fontWeight: 700, fontSize: '15px', color: '#1C1917'}}>No order found</p>
+            <p style={{fontSize: '13px', color: '#78716C', marginTop: '4px'}}>Check your order number or email and try again.</p>
           </div>
         )}
 
         {/* Order Found */}
         {order && (
-          <div className="flex flex-col gap-4">
+          <div style={{display: 'flex', flexDirection: 'column', gap: '16px'}}>
             {/* Status Badge */}
-            <div className="card p-5">
+            <div style={{background: 'white', borderRadius: '20px', border: '1.5px solid #F0E0CC', padding: '20px'}}>
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <p className="text-sm text-gray-500">Order Number</p>
@@ -161,7 +162,7 @@ export default function TrackPage() {
             </div>
 
             {/* Order Details */}
-            <div className="card p-5">
+            <div style={{background: 'white', borderRadius: '20px', border: '1.5px solid #F0E0CC', padding: '20px'}}>
               <h2 className="font-bold mb-3 text-gray-700">Order Details</h2>
               <div className="flex flex-col gap-2 mb-4">
                 {order.items.map((item, index) => (
@@ -188,7 +189,7 @@ export default function TrackPage() {
             </div>
 
             {/* Delivery Info */}
-            <div className="card p-5">
+            <div style={{background: 'white', borderRadius: '20px', border: '1.5px solid #F0E0CC', padding: '20px'}}>
               <h2 className="font-bold mb-3 text-gray-700">Delivery Info</h2>
               <div className="flex flex-col gap-2 text-sm text-gray-600">
                 <div className="flex justify-between">
@@ -213,6 +214,7 @@ export default function TrackPage() {
             </div>
           </div>
         )}
+        </div>
       </main>
       <Footer />
     </div>
