@@ -223,7 +223,8 @@ export default function Home() {
               onSelect={setSelectedCategory}
             />
           </div>
-{/* Popular Items */}
+
+          {/* Popular Items */}
           {popularIds.length > 0 && (
             <div style={{marginBottom: '40px'}}>
               <div style={{display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px'}}>
@@ -266,7 +267,7 @@ export default function Home() {
               <div style={{borderBottom: '1.5px solid #F0E0CC', marginTop: '40px', marginBottom: '8px'}} />
             </div>
           )}
-          
+
           {/* Result count */}
           {!loading && (
             <p style={{fontSize: '13px', color: '#78716C', marginBottom: '20px', fontWeight: 500}}>
