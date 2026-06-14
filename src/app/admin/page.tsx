@@ -1,28 +1,43 @@
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { supabase } from '@/lib/supabase'
 
 export default function AdminLoginPage() {
   const router = useRouter()
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
   async function handleLogin() {
+    if (!email || !password) {
+      setError('Please enter your email and password.')
+      return
+    }
     setLoading(true)
     setError('')
-    const { data } = await supabase
-      .from('settings')
-      .select('admin_password')
-      .single()
 
-    if (data && password === data.admin_password) {
-      sessionStorage.setItem('admin_authed', 'true')
-      router.push('/admin/orders')
-    } else {
-      setError('Incorrect password. Please try again.')
+    const res = await fetch('/api/admin/verify-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    })
+
+    const data = await res.json()
+
+    if (!res.ok || data.error) {
+      setError('Incorrect email or password.')
+      setLoading(false)
+      return
     }
+
+    localStorage.setItem('admin_authed', 'true')
+    localStorage.setItem('admin_user', JSON.stringify(data.user))
+    console.log('Login success, stored:', localStorage.getItem('admin_authed'))
+    
+    // Small delay to ensure localStorage is set before navigation
+    await new Promise(resolve => setTimeout(resolve, 100))
+    router.push('/admin/dashboard')
     setLoading(false)
   }
 
@@ -45,28 +60,48 @@ export default function AdminLoginPage() {
         <p style={{fontSize: '14px', color: '#78716C', marginBottom: '32px'}}>
           Little Orange · Restricted Access
         </p>
-        <input
-          type="password"
-          placeholder="Enter admin password"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          onKeyDown={e => e.key === 'Enter' && handleLogin()}
-          style={{
-            width: '100%', padding: '14px 16px',
-            borderRadius: '12px', border: '2px solid #F0E0CC',
-            fontSize: '14px', color: '#1C1917',
-            background: '#FFFBF5', outline: 'none',
-            boxSizing: 'border-box', marginBottom: '12px',
-            textAlign: 'center',
-          }}
-          onFocus={e => (e.target.style.borderColor = '#F97316')}
-          onBlur={e => (e.target.style.borderColor = '#F0E0CC')}
-        />
+
+        <div style={{display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '12px'}}>
+          <input
+            type="email"
+            placeholder="Email address"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && handleLogin()}
+            style={{
+              width: '100%', padding: '14px 16px',
+              borderRadius: '12px', border: '2px solid #F0E0CC',
+              fontSize: '14px', color: '#1C1917',
+              background: '#FFFBF5', outline: 'none',
+              boxSizing: 'border-box',
+            }}
+            onFocus={e => (e.target.style.borderColor = '#F97316')}
+            onBlur={e => (e.target.style.borderColor = '#F0E0CC')}
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && handleLogin()}
+            style={{
+              width: '100%', padding: '14px 16px',
+              borderRadius: '12px', border: '2px solid #F0E0CC',
+              fontSize: '14px', color: '#1C1917',
+              background: '#FFFBF5', outline: 'none',
+              boxSizing: 'border-box',
+            }}
+            onFocus={e => (e.target.style.borderColor = '#F97316')}
+            onBlur={e => (e.target.style.borderColor = '#F0E0CC')}
+          />
+        </div>
+
         {error && (
           <p style={{fontSize: '13px', color: '#DC2626', marginBottom: '12px', fontWeight: 600}}>
             {error}
           </p>
         )}
+
         <button
           onClick={handleLogin}
           disabled={loading}
@@ -77,7 +112,7 @@ export default function AdminLoginPage() {
             opacity: loading ? 0.7 : 1,
           }}
         >
-          {loading ? 'Checking...' : 'Login'}
+          {loading ? 'Signing in...' : 'Sign In'}
         </button>
       </div>
     </div>

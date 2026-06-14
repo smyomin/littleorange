@@ -2,39 +2,63 @@
 import { useState, useEffect, ReactNode } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { supabase } from '@/lib/supabase'
 import {
   LayoutDashboard, ShoppingBag, Package,
-  Tag, Settings, LogOut, Menu, X, ChevronRight
+  Tag, Settings, LogOut, Menu, Users, ChevronRight
 } from 'lucide-react'
 
-const NAV = [
-  { href: '/admin/dashboard', label: 'Dashboard', icon: <LayoutDashboard size={18} /> },
-  { href: '/admin/orders', label: 'Orders', icon: <ShoppingBag size={18} /> },
-  { href: '/admin/products', label: 'Products', icon: <Package size={18} /> },
-  { href: '/admin/categories', label: 'Categories', icon: <Tag size={18} /> },
-  { href: '/admin/inventory', label: 'Inventory', icon: <Package size={18} /> },
-  { href: '/admin/settings', label: 'Settings', icon: <Settings size={18} /> },
+interface AdminUser {
+  id: string
+  name: string
+  email: string
+  role: 'owner' | 'admin' | 'staff'
+}
+
+const ALL_NAV = [
+  { href: '/admin/dashboard', label: 'Dashboard', icon: <LayoutDashboard size={18} />, roles: ['owner', 'admin', 'staff'] },
+  { href: '/admin/orders', label: 'Orders', icon: <ShoppingBag size={18} />, roles: ['owner', 'admin', 'staff'] },
+  { href: '/admin/products', label: 'Products', icon: <Package size={18} />, roles: ['owner', 'admin'] },
+  { href: '/admin/categories', label: 'Categories', icon: <Tag size={18} />, roles: ['owner', 'admin'] },
+  { href: '/admin/inventory', label: 'Inventory', icon: <Package size={18} />, roles: ['owner', 'admin', 'staff'] },
+  { href: '/admin/users', label: 'Admin Users', icon: <Users size={18} />, roles: ['owner'] },
+  { href: '/admin/settings', label: 'Settings', icon: <Settings size={18} />, roles: ['owner'] },
 ]
+
+const ROLE_BADGE: Record<string, { label: string; color: string; bg: string }> = {
+  owner: { label: 'Owner', color: '#D97706', bg: '#FEF3C7' },
+  admin: { label: 'Admin', color: '#2563EB', bg: '#DBEAFE' },
+  staff: { label: 'Staff', color: '#16A34A', bg: '#DCFCE7' },
+}
 
 export default function AdminLayout({ children, title }: { children: ReactNode; title: string }) {
   const pathname = usePathname()
   const router = useRouter()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [adminUser, setAdminUser] = useState<AdminUser | null>(null)
 
-useEffect(() => {
-    const authed = sessionStorage.getItem('admin_authed')
-    console.log('admin_authed:', authed)
+  useEffect(() => {
+    const authed = localStorage.getItem('admin_authed')
+    const userStr = localStorage.getItem('admin_user')
     if (!authed) {
       router.push('/admin')
       return
     }
+    if (userStr) {
+      setAdminUser(JSON.parse(userStr))
+    }
   }, [router])
 
   function logout() {
-    sessionStorage.removeItem('admin_authed')
+    localStorage.removeItem('admin_authed')
+    localStorage.removeItem('admin_user')
     router.push('/admin')
   }
+
+  const nav = ALL_NAV.filter(item =>
+    adminUser ? item.roles.includes(adminUser.role) : false
+  )
+
+  const roleBadge = adminUser ? ROLE_BADGE[adminUser.role] : null
 
   const Sidebar = () => (
     <div style={{
@@ -55,7 +79,7 @@ useEffect(() => {
 
       {/* Nav */}
       <nav style={{flex: 1, padding: '16px 12px', display: 'flex', flexDirection: 'column', gap: '4px'}}>
-        {NAV.map(item => {
+        {nav.map(item => {
           const active = pathname === item.href
           return (
             <Link key={item.href} href={item.href} style={{
@@ -77,13 +101,32 @@ useEffect(() => {
         })}
       </nav>
 
-      {/* Bottom */}
-      <div style={{padding: '16px 12px', borderTop: '1px solid #292524', display: 'flex', flexDirection: 'column', gap: '8px'}}>
+      {/* User info + logout */}
+      <div style={{padding: '16px 12px', borderTop: '1px solid #292524'}}>
+        {adminUser && (
+          <div style={{
+            padding: '12px 14px', borderRadius: '12px',
+            background: '#292524', marginBottom: '8px',
+          }}>
+            <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px'}}>
+              <p style={{fontSize: '13px', fontWeight: 700, color: 'white'}}>{adminUser.name}</p>
+              {roleBadge && (
+                <span style={{
+                  fontSize: '10px', fontWeight: 700, padding: '2px 8px',
+                  borderRadius: '999px', background: roleBadge.bg, color: roleBadge.color,
+                }}>
+                  {roleBadge.label}
+                </span>
+              )}
+            </div>
+            <p style={{fontSize: '11px', color: '#78716C', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'}}>{adminUser.email}</p>
+          </div>
+        )}
         <a href="/" target="_blank" style={{
           display: 'flex', alignItems: 'center', gap: '8px',
           padding: '10px 14px', borderRadius: '12px',
           fontSize: '13px', fontWeight: 600, color: '#78716C',
-          textDecoration: 'none',
+          textDecoration: 'none', marginBottom: '4px',
         }}>
           <ChevronRight size={16} /> View Store
         </a>
@@ -140,6 +183,15 @@ useEffect(() => {
             </button>
             <h1 style={{fontWeight: 900, fontSize: '18px', color: '#1C1917'}}>{title}</h1>
           </div>
+          {adminUser && roleBadge && (
+            <span style={{
+              fontSize: '12px', fontWeight: 700,
+              padding: '4px 12px', borderRadius: '999px',
+              background: roleBadge.bg, color: roleBadge.color,
+            }}>
+              {roleBadge.label}
+            </span>
+          )}
         </div>
 
         {/* Content */}
