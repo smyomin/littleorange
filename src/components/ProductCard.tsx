@@ -1,4 +1,5 @@
 'use client'
+import { useState } from 'react'
 import { ShoppingCart } from 'lucide-react'
 import { CartItem } from '@/context/CartContext'
 
@@ -13,6 +14,46 @@ const categoryEmoji: Record<string, string> = {
   'Curry Paste': '🍛',
   'Sauce & Condiments': '🫙',
   'Soup Base': '🍲',
+}
+
+function AddToCartButton({ onAddToCart }: { onAddToCart: () => void }) {
+  const [state, setState] = useState<'idle' | 'adding' | 'added'>('idle')
+
+  function handleClick() {
+    if (state !== 'idle') return
+    setState('adding')
+    onAddToCart()
+    setTimeout(() => setState('added'), 150)
+    setTimeout(() => setState('idle'), 1500)
+  }
+
+  return (
+    <button
+      onClick={handleClick}
+      style={{
+        display: 'flex', alignItems: 'center', gap: '6px',
+        background: state === 'added' ? '#16A34A' : '#F97316',
+        color: 'white', border: 'none', borderRadius: '10px',
+        padding: '8px 14px', fontSize: '13px',
+        fontWeight: 700, cursor: state === 'idle' ? 'pointer' : 'default',
+        transition: 'all 0.25s ease',
+        transform: state === 'adding' ? 'scale(0.88)' : 'scale(1)',
+        boxShadow: state === 'added' ? '0 4px 12px rgba(22,163,74,0.35)' : state === 'idle' ? '0 2px 8px rgba(249,115,22,0.25)' : 'none',
+      }}
+    >
+      {state === 'added' ? (
+        <>
+          <span style={{fontSize: '14px'}}>✓</span>
+          Added!
+        </>
+      ) : (
+        <>
+          <ShoppingCart size={14} />
+          Add
+        </>
+      )}
+    </button>
+  )
 }
 
 export default function ProductCard({ product, onAddToCart }: ProductCardProps) {
@@ -101,31 +142,7 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
             NZ${product.price.toFixed(2)}
           </span>
           {product.in_stock ? (
-            <button
-              onClick={(e) => {
-                onAddToCart(product)
-                const btn = e.currentTarget
-                btn.style.transform = 'scale(0.85)'
-                btn.style.background = '#16A34A'
-                btn.innerHTML = '✓ Added'
-                setTimeout(() => {
-                  btn.style.transform = 'scale(1)'
-                  btn.style.background = '#F97316'
-                  btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg> Add'
-                }, 1000)
-              }}
-              style={{
-                display: 'flex', alignItems: 'center', gap: '6px',
-                background: '#F97316', color: 'white',
-                border: 'none', borderRadius: '10px',
-                padding: '8px 14px', fontSize: '13px',
-                fontWeight: 700, cursor: 'pointer',
-                transition: 'all 0.2s',
-              }}
-            >
-              <ShoppingCart size={14} />
-              Add
-            </button>
+            <AddToCartButton onAddToCart={() => onAddToCart(product)} />
           ) : (
             <span style={{
               fontSize: '12px', fontWeight: 600,
